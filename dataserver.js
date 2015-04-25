@@ -71,23 +71,21 @@ var reqHandlers = {
       } catch(e) {
         console.err(e);
       }
-      var imgEntry = {
+      // imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
+      // console.log("Encode image to: " + imgpkt.raw);
+      var lab2img = new dbCol({
         date: new Date(),
         img: { 
           raw: imgpkt.raw, 
           contentType: imgpkt.contentType,
           hello: 3.5
         }
-      };
-      var lab2img = new dbCol(imgEntry);
-      console.log("RAW: " + imgEntry.img.raw);
+      });
       lab2img.save(function(err, lab2img) {  // Save to db
         if (err)  return console.error(err);
         console.log("SAVE an Image");
         res.send('Server GOT your image!');
       }); 
-      imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
-      // console.log("Encode image to: " + imgpkt.raw);
       io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
     });    
   }
@@ -108,9 +106,8 @@ var getLab2ImgCol = function() {
   var Lab2ImgSchema = mongoose.Schema({
     date: Date,
     img: { 
-      raw: Buffer, 
-      contentType: String,
-      hello: Number 
+      raw: String, 
+      contentType: String
     }
   });
   return mongoose.model('Lab2ImgCol', Lab2ImgSchema);
