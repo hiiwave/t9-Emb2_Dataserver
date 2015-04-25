@@ -6,7 +6,7 @@ var port = process.env.PORT || 5000;
 var mongoose = require( 'mongoose' );
 
 var reqHandlers = {
-  monitorHandler: function(dbCol, socket) {
+  monitorHandler: function(dbCol, imgCol, socket) {
     var monitorAgent = { 
       init: function() {
         console.log('A monitor connected');
@@ -29,9 +29,13 @@ var reqHandlers = {
           socket.emit('countDb', count);  
         });   
         var historyStream = dbCol.find().sort({_id : -1}).limit(5).stream();
-        historyStream.on('data', function(pkt) {
+        historyStream.on('data', function (pkt) {
           socket.emit('historyPkt', pkt);  
-        })
+        });
+        var lastImageStream = dbCol.find().sort({_id: -1}).limit(1).stream();
+        lastImageStream.on('data', function (entry) {
+          socket.emit('lastImg', entry);
+        }
       }
     };
     monitorAgent.init(); 
@@ -72,7 +76,6 @@ var reqHandlers = {
         console.err(e);
       }
       imgpkt.raw = new Buffer(imgpkt.raw);
-      // console.log("Encode image to: " + imgpkt.raw);
       var lab2img = new dbCol({
         date: new Date(),
         img: { 
@@ -87,6 +90,7 @@ var reqHandlers = {
         res.send('Server GOT your image!');
       }); 
       imgpkt.raw = imgpkt.raw.toString('base64');
+      // console.log("Encode image to: " + imgpkt.raw);
       io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
     });    
   }
@@ -132,7 +136,7 @@ db.once('open', function (callback) {
   var Lab2ImgCol = getLab2ImgCol();
 
   io.on('connection', function (socket) {  // connection setup for monitor.html
-    reqHandlers.monitorHandler(Lab2Collection, socket);
+    reqHandlers.monitorHandler(Lab2Collection, Lab2ImgCol, socket);
   });
 
   app.post('/feed', function (req, res) {

@@ -18,9 +18,6 @@ socket.on('newImg', function(imgpkt) {
 	var b64raw = imgpkt.raw;
 	var imgsrc = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
 	$('#newImg').attr('src', imgsrc);
-	// var outputImg = document.createElement('img');
-	// outputImg.src = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
-	// document.body.appendChild(outputImg);
 })
 
 socket.on('countDb', function(count) {
@@ -32,3 +29,9 @@ socket.on('historyPkt', function(pkt) {
   $('#newData').html(str);
   console.log("History data got: " + str);
 });
+
+socket.on('lastImg', function (entry) {
+  var b64raw = entry.img.raw;
+  var imgsrc = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
+  $('#newImg').attr('src', imgsrc);
+})
