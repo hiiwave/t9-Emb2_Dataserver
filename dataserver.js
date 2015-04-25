@@ -71,7 +71,11 @@ var reqHandlers = {
       } catch(e) {
         console.err(e);
       }
-      var lab2img = new dbCol(imgpkt);
+      var imgEntry = {
+        date: new Date(),
+        img: { raw: imgpkt.raw, contentType: imgpkt.contentType }
+      };
+      var lab2img = new dbCol(imgEntry);
       lab2img.save(function(err, lab2img) {  // Save to db
         if (err)  return console.error(err);
         console.log("SAVE an Image");
@@ -113,7 +117,7 @@ db.once('open', function (callback) {
   var Lab2Collection = getLab2Collection(mongoose);
   var Lab2ImgCol = mongoose.model('Lab2ImgCol', mongoose.Schema({
     date: Date,
-    img: { data: Buffer, connectType: String }
+    img: { raw: Buffer, contentType: String }
   }))
 
   io.on('connection', function (socket) {  // connection setup for monitor.html
