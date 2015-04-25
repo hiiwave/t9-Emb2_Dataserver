@@ -71,15 +71,15 @@ var reqHandlers = {
       } catch(e) {
         console.err(e);
       }
-      imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
-      // console.log("Encode image to: " + imgpkt.raw);
-      io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
       var lab2img = new dbCol(imgpkt);
       lab2img.save(function(err, lab2img) {  // Save to db
         if (err)  return console.error(err);
         console.log("SAVE an Image");
         res.send('Server GOT your data!');
       }); 
+      imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
+      // console.log("Encode image to: " + imgpkt.raw);
+      io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
     });    
   }
 }
@@ -104,6 +104,7 @@ var mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI
 // To use local database, change to this:
 // var mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
 mongoose.connect(mongodbUrl);
+console.log("mongodbUrl = " + mongodbUrl);
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Database connection error: '));
