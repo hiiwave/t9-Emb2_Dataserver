@@ -35,7 +35,7 @@ var reqHandlers = {
         var lastImageStream = dbCol.find().sort({_id: -1}).limit(1).stream();
         lastImageStream.on('data', function (entry) {
           socket.emit('lastImg', entry);
-        }
+        });
       }
     };
     monitorAgent.init(); 
