@@ -71,7 +71,7 @@ var reqHandlers = {
       } catch(e) {
         console.err(e);
       }
-      // imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
+      imgpkt.raw = new Buffer(imgpkt.raw);
       // console.log("Encode image to: " + imgpkt.raw);
       var lab2img = new dbCol({
         date: new Date(),
@@ -86,6 +86,7 @@ var reqHandlers = {
         console.log("SAVE an Image");
         res.send('Server GOT your image!');
       }); 
+      imgpkt.raw = imgpkt.raw.toString('base64');
       io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
     });    
   }
@@ -106,7 +107,7 @@ var getLab2ImgCol = function() {
   var Lab2ImgSchema = mongoose.Schema({
     date: Date,
     img: { 
-      raw: String, 
+      raw: Buffer, 
       contentType: String
     }
   });
