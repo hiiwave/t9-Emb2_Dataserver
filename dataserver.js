@@ -80,6 +80,7 @@ var reqHandlers = {
         }
       };
       var lab2img = new dbCol(imgEntry);
+      console.log("RAW: " + imgEntry.img.raw);
       lab2img.save(function(err, lab2img) {  // Save to db
         if (err)  return console.error(err);
         console.log("SAVE an Image");
