@@ -5,52 +5,78 @@ var io = require('socket.io')(server);
 var port = process.env.PORT || 5000;
 var mongoose = require( 'mongoose' );
 
-var monitorHandler = function(dbCol, socket) {
-  var monitorAgent = { 
-    init: function() {
-      console.log('A monitor connected');
-      socket.on('disconnect', function() {console.log('monitor disconnected'); });
-      this.updateClock();
-      this.sendHistoryData();
-    },
-    updateClock: function() {
-      socket.emit('date', {'date': new Date()});
-      setInterval(function() { socket.emit('date', {'date': new Date()});}, 5000);
-    },
-    sendHistoryData: function() {
-      dbCol.count({}, function(err, count) {
-        socket.emit('countDb', count);  
-      });   
-      var historyStream = dbCol.find().sort({_id : -1}).limit(5).stream();
-      historyStream.on('data', function(pkt) {
-        socket.emit('historyPkt', pkt);  
-      })
-    }
-  };
-  monitorAgent.init(); 
-};
-
-var feedHandler = function(dbCol, req, res) {
-  var post_request_body = '';
-  req.on('data', function (data) {
-     post_request_body += data;
-  });
-  req.on('end', function (data) {
-    var pkt;
-    try {
-      pkt = JSON.parse(post_request_body);
-    } catch(e) {
-      console.err(e);
-    }
-    io.sockets.emit('newPkt', pkt);  // Send event:newData to all monitors
-    var lab2doc = new dbCol(pkt);
-    lab2doc.save(function(err, lab2doc) {  // Save to db
-      if (err)  return console.error(err);
-      console.log("SAVE a document");
-      res.send('Server GOT your data!');
-    }); 
-  });
-};
+var reqHandlers = {
+  monitorHandler: function(dbCol, socket) {
+    var monitorAgent = { 
+      init: function() {
+        console.log('A monitor connected');
+        socket.on('disconnect', function() {console.log('monitor disconnected'); });
+        this.updateClock();
+        this.sendHistoryData();
+      },
+      updateClock: function() {
+        socket.emit('date', {'date': new Date()});
+        setInterval(function() { socket.emit('date', {'date': new Date()});}, 5000);
+      },
+      sendHistoryData: function() {
+        dbCol.count({}, function(err, count) {
+          socket.emit('countDb', count);  
+        });   
+        var historyStream = dbCol.find().sort({_id : -1}).limit(5).stream();
+        historyStream.on('data', function(pkt) {
+          socket.emit('historyPkt', pkt);  
+        })
+      }
+    };
+    monitorAgent.init(); 
+  },
+  feedHandler: function(dbCol, req, res) {
+    var post_request_body = '';
+    req.on('data', function (data) {
+       post_request_body += data;
+    });
+    req.on('end', function (data) {
+      var pkt;
+      try {
+        pkt = JSON.parse(post_request_body);
+      } catch(e) {
+        console.err(e);
+      }
+      io.sockets.emit('newPkt', pkt);  // Send event:newData to all monitors
+      var lab2doc = new dbCol(pkt);
+      lab2doc.save(function(err, lab2doc) {  // Save to db
+        if (err)  return console.error(err);
+        console.log("SAVE a document");
+        res.send('Server GOT your data!');
+      }); 
+    });
+  },
+  feedImgHandler: function(dbCol, req, res) {
+    var post_request_body = '';
+    req.on('data', function (data) {
+       post_request_body += data;
+    });
+    req.on('end', function (data) {
+      var imgpkt;
+      try {
+        imgpkt = JSON.parse(post_request_body);
+        console.log("Get image: " + imgpkt.raw);
+        console.log("Got image type: " + imgpkt.contentType);
+      } catch(e) {
+        console.err(e);
+      }
+      imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
+      // console.log("Encode image to: " + imgpkt.raw);
+      io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
+      var lab2img = new dbCol(imgpkt);
+      lab2img.save(function(err, lab2img) {  // Save to db
+        if (err)  return console.error(err);
+        console.log("SAVE an Image");
+        res.send('Server GOT your data!');
+      }); 
+    });    
+  }
+}
 
 var getLab2Collection = function() {
   var Lab2Schema = mongoose.Schema({
@@ -78,14 +104,21 @@ db.on('error', console.error.bind(console, 'Database connection error: '));
 db.once('open', function (callback) {
   console.log("Database open");
   var Lab2Collection = getLab2Collection(mongoose);
+  var Lab2ImgCol = mongoose.model('Lab2ImgCol', mongoose.Schema({
+    date: Date,
+    img: { data: Buffer, connectType: String }
+  }))
 
-  io.on('connection', function(socket) {  // connection setup for monitor.html
-    monitorHandler(Lab2Collection, socket);
+  io.on('connection', function (socket) {  // connection setup for monitor.html
+    reqHandlers.monitorHandler(Lab2Collection, socket);
   });
 
-  app.post('/feed', function(req, res) {
-    feedHandler(Lab2Collection, req, res);
+  app.post('/feed', function (req, res) {
+    reqHandlers.feedHandler(Lab2Collection, req, res);
   });
+  app.post('/feedimg', function (req, res) {
+    reqHandlers.feedImgHandler(Lab2ImgCol, req, res);
+  })
 
   app.use(express.static('public'));
 });

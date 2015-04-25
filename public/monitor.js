@@ -14,6 +14,15 @@ socket.on('newPkt', function(pkt) {
   $('#countData').html(1 + parseInt($('#countData').html()));
 });
 
+socket.on('newImg', function(imgpkt) {
+	var b64raw = imgpkt.raw;
+	var imgsrc = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
+	$('#newImg').attr('src', imgsrc);
+	// var outputImg = document.createElement('img');
+	// outputImg.src = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
+	// document.body.appendChild(outputImg);
+})
+
 socket.on('countDb', function(count) {
   $('#countData').html(count);
 });
