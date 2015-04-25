@@ -32,7 +32,7 @@ var reqHandlers = {
         historyStream.on('data', function (pkt) {
           socket.emit('historyPkt', pkt);  
         });
-        var lastImageStream = dbCol.find().sort({_id: -1}).limit(1).stream();
+        var lastImageStream = imgCol.find().sort({_id: -1}).limit(1).stream();
         lastImageStream.on('data', function (entry) {
           socket.emit('lastImg', entry);
         });
