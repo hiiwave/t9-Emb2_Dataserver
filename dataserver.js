@@ -34,10 +34,10 @@ var reqHandlers = {
         });
         var lastImageStream = imgCol.find().sort({_id: -1}).limit(1).stream();
         lastImageStream.on('data', function (entry) {
-          var img = entry.img;
-          img.raw = (new Buffer(img.raw)).toString('base64');
-          console.log("Send history img: ", img.raw);
-          socket.emit('lastImg', img);
+          // var img = entry.img;
+          // img.raw = (new Buffer(img.raw)).toString('base64');
+          // console.log("Send history img: ", img.raw);
+          // socket.emit('lastImg', img);
         });
       }
     };
