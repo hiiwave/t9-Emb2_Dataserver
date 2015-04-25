@@ -73,7 +73,11 @@ var reqHandlers = {
       }
       var imgEntry = {
         date: new Date(),
-        img: { raw: imgpkt.raw, contentType: imgpkt.contentType }
+        img: { 
+          raw: imgpkt.raw, 
+          contentType: imgpkt.contentType,
+          hello: 3.5
+        }
       };
       var lab2img = new dbCol(imgEntry);
       lab2img.save(function(err, lab2img) {  // Save to db
@@ -99,14 +103,25 @@ var getLab2Collection = function() {
   });
   return mongoose.model('Lab2Collection', Lab2Schema);
 }
+var getLab2ImgCol = function() {
+  var Lab2ImgSchema = mongoose.Schema({
+    date: Date,
+    img: { 
+      raw: Buffer, 
+      contentType: String,
+      hello: Number 
+    }
+  });
+  return mongoose.model('Lab2ImgCol', Lab2ImgSchema);
+}
 
 server.listen(port, function() {
   console.log("Express server listening on port %d", server.address().port);
 });
 var mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI
     : 'mongodb://heroku_app35998051:nvjupt69fjpud7br66se29r23f@ds035167.mongolab.com:35167/heroku_app35998051';
-// To use local database, change to this:
-// var mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
+// To use local database, active this:
+// mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
 mongoose.connect(mongodbUrl);
 console.log("mongodbUrl = " + mongodbUrl);
 
@@ -114,11 +129,8 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Database connection error: '));
 db.once('open', function (callback) {
   console.log("Database open");
-  var Lab2Collection = getLab2Collection(mongoose);
-  var Lab2ImgCol = mongoose.model('Lab2ImgCol', mongoose.Schema({
-    date: Date,
-    img: { raw: Buffer, contentType: String }
-  }))
+  var Lab2Collection = getLab2Collection();
+  var Lab2ImgCol = getLab2ImgCol();
 
   io.on('connection', function (socket) {  // connection setup for monitor.html
     reqHandlers.monitorHandler(Lab2Collection, socket);
