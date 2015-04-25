@@ -16,7 +16,10 @@ var reqHandlers = {
       },
       updateClock: function() {
         socket.emit('date', {'date': new Date()});
-        setInterval(function() { socket.emit('date', {'date': new Date()});}, 5000);
+        setInterval(function() { 
+          socket.emit('date', {'date': new Date()});
+          console.log("My port is " + process.env.PORT);
+        }, 5000);
       },
       sendHistoryData: function() {
         dbCol.count({}, function(err, count) {
