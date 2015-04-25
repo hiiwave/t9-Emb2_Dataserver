@@ -32,6 +32,7 @@ socket.on('historyPkt', function(pkt) {
 
 socket.on('lastImg', function (entry) {
   var b64raw = entry.img.raw.toString('base64');
-  var imgsrc = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
+  var imgsrc = 'data:' + entry.img.contentType + ';base64,' + b64raw;
   $('#newImg').attr('src', imgsrc);
+  console.log("Last image got");
 })
