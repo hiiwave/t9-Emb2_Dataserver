@@ -10,13 +10,16 @@ var reqHandlers = {
     var monitorAgent = { 
       init: function() {
         console.log('A monitor connected');
-        socket.on('disconnect', function() {console.log('monitor disconnected'); });
-        this.updateClock();
+        var intervalId = this.updateClock();
         this.sendHistoryData();
+        socket.on('disconnect', function() {
+          console.log('monitor disconnected'); 
+          clearInterval(intervalId);
+        });
       },
       updateClock: function() {
         socket.emit('date', {'date': new Date()});
-        setInterval(function() { 
+        return setInterval(function() { 
           socket.emit('date', {'date': new Date()});
           console.log("My port is " + process.env.PORT);
         }, 5000);
