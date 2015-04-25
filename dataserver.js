@@ -75,7 +75,7 @@ var reqHandlers = {
       lab2img.save(function(err, lab2img) {  // Save to db
         if (err)  return console.error(err);
         console.log("SAVE an Image");
-        res.send('Server GOT your data!');
+        res.send('Server GOT your image!');
       }); 
       imgpkt.raw = new Buffer(imgpkt.raw).toString('base64');
       // console.log("Encode image to: " + imgpkt.raw);
