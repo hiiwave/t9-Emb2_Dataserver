@@ -21,7 +21,7 @@ var reqHandlers = {
         socket.emit('date', {'date': new Date()});
         return setInterval(function() { 
           socket.emit('date', {'date': new Date()});
-          console.log("My port is " + process.env.PORT);
+          // console.log("My port is " + process.env.PORT);
         }, 5000);
       },
       sendHistoryData: function() {
