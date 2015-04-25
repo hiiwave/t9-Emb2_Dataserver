@@ -125,7 +125,7 @@ server.listen(port, function() {
 var mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI
     : 'mongodb://heroku_app35998051:nvjupt69fjpud7br66se29r23f@ds035167.mongolab.com:35167/heroku_app35998051';
 // To use local database, active this:
-// mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
+mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
 mongoose.connect(mongodbUrl);
 console.log("mongodbUrl = " + mongodbUrl);
 
