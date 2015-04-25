@@ -30,9 +30,9 @@ socket.on('historyPkt', function(pkt) {
   console.log("History data got: " + str);
 });
 
-socket.on('lastImg', function (entry) {
-  var b64raw = entry.img.raw;
-  var imgsrc = 'data:' + entry.img.contentType + ';base64,' + b64raw;
+socket.on('lastImg', function (img) {
+  var b64raw = img.raw;
+  var imgsrc = 'data:' + img.contentType + ';base64,' + b64raw;
   $('#newImg').attr('src', imgsrc);
   console.log("Last image got");
 })
