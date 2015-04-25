@@ -34,7 +34,7 @@ var reqHandlers = {
         });
         var lastImageStream = imgCol.find().sort({_id: -1}).limit(1).stream();
         lastImageStream.on('data', function (entry) {
-          entry.img.raw = new Buffer(entry.img.raw).toString('base64');
+          entry.img.raw = (new Buffer(entry.img.raw)).toString('base64');
           console.log("Send history img: ", entry.img.raw);
           socket.emit('lastImg', entry);
         });
