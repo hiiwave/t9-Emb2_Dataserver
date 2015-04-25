@@ -34,6 +34,7 @@ var reqHandlers = {
         });
         var lastImageStream = imgCol.find().sort({_id: -1}).limit(1).stream();
         lastImageStream.on('data', function (entry) {
+          entry.img.raw = entry.img.raw.toString('base64');
           socket.emit('lastImg', entry);
         });
       }
