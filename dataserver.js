@@ -28,6 +28,9 @@ var reqHandlers = {
         dbCol.count({}, function(err, count) {
           socket.emit('countDb', count);  
         });   
+        imgCol.count({}, function(err, count) {
+          socket.emit('countImg', count);  
+        });   
         var historyStream = dbCol.find().sort({_id : -1}).limit(5).stream();
         historyStream.on('data', function (pkt) {
           socket.emit('historyPkt', pkt);  

@@ -18,10 +18,15 @@ socket.on('newImg', function(imgpkt) {
 	var b64raw = imgpkt.raw;
 	var imgsrc = 'data:' + imgpkt.contentType + ';base64,' + b64raw;
 	$('#newImg').attr('src', imgsrc);
+  $('#countImg').html(1 + parseInt($('#countImg').html()));
 })
 
 socket.on('countDb', function(count) {
   $('#countData').html(count);
+});
+
+socket.on('countImg', function(count) {
+  $('#countImg').html(count);
 });
 
 socket.on('historyPkt', function(pkt) {  
