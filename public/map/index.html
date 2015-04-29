@@ -33,6 +33,8 @@
   var map = el.append('svg')
     .attr('width', width)
     .attr('height', height)
+  
+  var overFunction() {}
 
   map.append('image')
     .attr('xlink:href', 'ntu.png')
@@ -57,7 +59,8 @@
         var lonlat = projection(d.geometry.coordinates);
         d3.select(this)
           .attr('cx', lonlat[0])
-          .attr('cy', lonlat[1])
+	  .attr('cy', lonlat[1])
+	.on('mouseover', overFunction);
       })
   })
 </script>
