@@ -17,9 +17,9 @@
 <script charset="utf-8">
   var el = d3.select('.js-map'),
       // 150 DPI image
-      width = 630,
+      width = 1260/2,
       // 150 DPI image
-      height = 450,
+      height = 840/2,
       // Exported bounds of ntu image
       ntuBounds = [[121.533002, 25.014095], [121.546520, 25.022262]]
 
@@ -34,7 +34,6 @@
     .attr('width', width)
     .attr('height', height)
   
-  var overFunction() {}
 
   map.append('image')
     .attr('xlink:href', 'ntu.png')
@@ -59,9 +58,13 @@
         var lonlat = projection(d.geometry.coordinates);
         d3.select(this)
           .attr('cx', lonlat[0])
-	  .attr('cy', lonlat[1])
-	.on('mouseover', overFunction);
-      })
+	        .attr('cy', lonlat[1])
+	         //.on('mouseover', overFunction);
+        })
+        .on('mouseover',function() {
+          
+        })
+      
   })
 </script>
 </body>
