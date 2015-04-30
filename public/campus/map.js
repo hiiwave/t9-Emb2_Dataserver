@@ -68,7 +68,6 @@ $(document).ready( function() {
       xhr.open('POST', '/reqspot');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       xhr.onload = function() {
-        console.log(this.responseText);
         callback(drawer.preProc(JSON.parse(this.responseText)));
       };
       xhr.send(JSON.stringify(idset)); 
@@ -100,7 +99,7 @@ $(document).ready( function() {
         .range([height, 0])
         .domain(d3.extent(data, function (d) { return d[drawer.dtype]; }));
         // .domain([0, d3.max(data, function (d) { return d[drawer.dtype]; })]);
-      var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+      var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(4);
       var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
       var dateFormat = d3.time.format('%X%Z');
       var valueline = d3.svg.line()
