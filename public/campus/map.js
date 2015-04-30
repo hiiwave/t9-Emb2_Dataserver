@@ -1,12 +1,13 @@
 $(document).ready( function() {
   var drawer;
+  var imgPutter;
 
   (function initialMap(){
     var el = d3.select('#campus-map'),
       // 150 DPI image
-      width = 1260/2,
+      width = 690, // 1260/2,
       // 150 DPI image
-      height = 840/2,
+      height = 460,  // 840/2,
       // Exported bounds of ntu image
       ntuBounds = [[121.533002, 25.014095], [121.546520, 25.022262]];
 
@@ -49,6 +50,7 @@ $(document).ready( function() {
             .on("mouseover", function(){
               console.log("Mouseover deteced! " + i);
               drawer.update(i);
+              imgPutter.update(i);
             });
         });
     });
@@ -176,6 +178,30 @@ $(document).ready( function() {
   };
   drawer.init();
   
+  imgPutter = {
+    init: function() {
+      imgPutter.firstPut();
+    },
+    update: undefined,
+    firstPut: function() {
+      var width = 270, height = 270;
+      var svg = d3.select('#spotimg').append('svg')
+        .attr('width', width)
+        .attr('height', height);
+      svg.append('image')
+        .attr('xlink:href', 'spotimg/0.jpg')
+        .attr('width', width)
+        .attr('height', height);
+      imgPutter.update = function(idx) {
+        var svg = d3.select("#spotimg");
+        var imgName = 'spotimg/' + Math.round(idx).toString() + ".jpg";
+        console.log(imgName);
+        svg.select('image').attr('xlink:href', imgName);
+      }
+    }
+  };
+  imgPutter.init();
+
   (function bindEvent() {
     $( "#dtype" ).selectmenu( {
       change: function(event, ui) {

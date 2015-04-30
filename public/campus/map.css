@@ -12,6 +12,14 @@ body {
 	/*stroke: ;*/
 }
 
+#spot-data {
+  float: left;
+}
+
+#spotimg {
+  margin-left: 420px;
+}
+
 path { 
     stroke: steelblue;
     stroke-width: 2;
