@@ -68,6 +68,7 @@ $(document).ready( function() {
       xhr.open('POST', '/reqspot');
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
       xhr.onload = function() {
+        console.log(this.responseText);
         callback(drawer.preProc(JSON.parse(this.responseText)));
       };
       xhr.send(JSON.stringify(idset)); 
