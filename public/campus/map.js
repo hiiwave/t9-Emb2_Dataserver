@@ -99,7 +99,7 @@ $(document).ready( function() {
         // .domain([0, d3.max(data, function (d) { return d[drawer.dtype]; })]);
       var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
       var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
-      var dateFormat = d3.time.format('%X');
+      var dateFormat = d3.time.format('%X%Z');
       var valueline = d3.svg.line()
         .x(function(d) { return x(d.date);  })
         .y(function(d) { return y(d[drawer.dtype]); });
@@ -169,6 +169,7 @@ $(document).ready( function() {
     preProc: function(data) {
       for(var key in data) {
         data[key].date = new Date(data[key].date);
+        // console.log(data[key].date);
       };
       return data;
     }
