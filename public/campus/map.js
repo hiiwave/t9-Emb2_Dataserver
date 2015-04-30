@@ -141,7 +141,7 @@ $(document).ready( function() {
       */
       switch (idx) {
         case 0:
-          return {idBegin: 1, idEnd: 20}
+          return {idBegin: 2, idEnd: 20}
           break;
         case 1:
           return {idBegin: 21, idEnd: 45}
