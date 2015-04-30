@@ -1,0 +1,64 @@
+<!doctype html>
+<meta charset="utf-8">
+<head>
+  <link rel=stylesheet type="text/css" href="map.css" media="screen"> 
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script charset="utf-8" src="map.js"></script>
+</head>
+<body>
+  <h1> Campus Map </h1>
+  <div id="campus-map"></div>
+  <div id="spot-data"></div>
+  <script charset="utf-8">
+    var el = d3.select('#campus-map'),
+        // 150 DPI image
+        width = 1260/2,
+        // 150 DPI image
+        height = 840/2,
+        // Exported bounds of ntu image
+        ntuBounds = [[121.533002, 25.014095], [121.546520, 25.022262]];
+
+    var projection = d3.geo.mercator()
+      .scale(1)
+      .translate([0, 0]);
+
+    var path = d3.geo.path()
+      .projection(projection);
+
+    var map = el.append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+
+    map.append('image')
+      .attr('xlink:href', 'ntu.png')
+      .attr('width', width)
+      .attr('height', height);
+
+    d3.json('ntuspots.json', function(err, data) {
+      var b = [projection(ntuBounds[0]), projection(ntuBounds[1])],
+          s = 1 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+          t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2]
+
+      projection
+        .scale(s)
+        .translate(t)
+
+      map.selectAll('.ntuspot')
+        .data(data.features)
+      .enter().append('circle')
+        .attr('class', 'ntuspot')
+        .attr('r', 5)
+        .each(function(d, i) {
+          var lonlat = projection(d.geometry.coordinates);
+          d3.select(this)
+            .attr('cx', lonlat[0])
+            .attr('cy', lonlat[1])
+            .on("mouseover", function(){
+              console.log("Mouseover deteced! " + i);
+              showSpot(i);
+            });
+        });
+    });
+  </script>
+</body>

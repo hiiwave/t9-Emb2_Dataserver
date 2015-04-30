@@ -1,4 +1,5 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
@@ -35,13 +36,6 @@ var reqHandlers = {
         historyStream.on('data', function (pkt) {
           socket.emit('historyPkt', pkt);  
         });
-        // var lastImageStream = imgCol.find().sort({_id: -1}).limit(1).stream();
-        // lastImageStream.on('data', function (entry) {
-        //   // var img = entry.img;
-        //   // img.raw = (new Buffer(img.raw)).toString('base64');
-        //   // console.log("Send history img: ", img.raw);
-        //   // socket.emit('lastImg', img);
-        // });
       }
     };
     monitorAgent.init(); 
@@ -99,6 +93,15 @@ var reqHandlers = {
       // console.log("Encode image to: " + imgpkt.raw);
       io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
     });    
+  },
+  reqSpotHandler: function(dbCol, req, res) {
+    var idBegin 
+    var idBegin = req.body.idBegin,
+        idEnd = req.body.idEnd;
+    dbCol.find().sort({_id : -1}).limit(idEnd)
+                .skip(idBegin - 1).lean().exec(function (err, docs) {
+      res.send(JSON.stringify(docs));
+    }); 
   }
 }
 
@@ -130,7 +133,7 @@ server.listen(port, function() {
 var mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI
     : 'mongodb://heroku_app35998051:nvjupt69fjpud7br66se29r23f@ds035167.mongolab.com:35167/heroku_app35998051';
 // To use local database, active this:
-// mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
+mongodbUrl = (process.env.MONGOLAB_URI)? process.env.MONGOLAB_URI : 'mongodb://localhost/test';  // for using local database
 mongoose.connect(mongodbUrl);
 console.log("mongodbUrl = " + mongodbUrl);
 
@@ -145,12 +148,16 @@ db.once('open', function (callback) {
     reqHandlers.monitorHandler(Lab2Collection, Lab2ImgCol, socket);
   });
 
+  app.use(bodyParser.json());
   app.post('/feed', function (req, res) {
     reqHandlers.feedHandler(Lab2Collection, req, res);
   });
   app.post('/feedimg', function (req, res) {
     reqHandlers.feedImgHandler(Lab2ImgCol, req, res);
-  })
+  });
+  app.post('/reqspot', function (req, res) {
+    reqHandlers.reqSpotHandler(Lab2Collection, req, res);
+  });
 
   app.use(express.static('public'));
 });

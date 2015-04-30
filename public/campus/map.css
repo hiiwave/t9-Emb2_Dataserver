@@ -1,0 +1,22 @@
+body {
+  margin: 0px 100px auto;
+}
+
+.ntuspot {
+	fill: red;
+	cursor: pointer;
+	/*stroke: ;*/
+}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+.axis path,
+.axis line {
+    stroke: grey;
+    stroke-width: 1;
+    fill: none;
+    shape-rendering: crispEdges;
+}
