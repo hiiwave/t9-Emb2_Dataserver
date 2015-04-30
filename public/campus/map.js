@@ -77,7 +77,7 @@ $(document).ready( function() {
     lastReqIdx: 0,
     update: function(idx) {
       if (idx == undefined) {
-        console.log("Last requested index: " + drawer.lastReqIdx);
+        // console.log("Last requested index: " + drawer.lastReqIdx);
         idx = drawer.lastReqIdx;
       } else {
         drawer.lastReqIdx = idx;

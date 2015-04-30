@@ -98,13 +98,12 @@ var reqHandlers = {
     var idBegin 
     var idBegin = req.body.idBegin,
         idEnd = req.body.idEnd;
-    dbCol.find().sort({_id : +1}).limit(idEnd)
+    dbCol.find().sort({_id : +1}).limit(idEnd - idBegin + 1)
                 .skip(idBegin - 1).lean().exec(function (err, docs) {
       res.send(JSON.stringify(docs));
     }); 
   }
 }
-
 var getLab2Collection = function() {
   var Lab2Schema = mongoose.Schema({
     date: Date,
