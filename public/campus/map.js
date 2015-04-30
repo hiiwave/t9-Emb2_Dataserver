@@ -71,9 +71,17 @@ $(document).ready( function() {
       xhr.send(JSON.stringify(idset)); 
     },
     svgUpdator: undefined,
+    lastReqIdx: 0,
     update: function(idx) {
+      if (idx == undefined) {
+        console.log("Last requested index: " + drawer.lastReqIdx);
+        idx = drawer.lastReqIdx;
+      } else {
+        drawer.lastReqIdx = idx;
+      }
       drawer.reqData(drawer.getIdSet(idx), function(data) {
         drawer.svgUpdator(data);
+        drawer.lastData = data;
       })
     },
     firstDraw: function(data) {
@@ -87,13 +95,14 @@ $(document).ready( function() {
         .domain(d3.extent(data, function (d) { return d.date; }));
       var y = d3.scale.linear()
         .range([height, 0])
-        .domain([0, d3.max(data, function (d) { return d['dtype']; })]);
+        .domain(d3.extent(data, function (d) { return d[drawer.dtype]; }));
+        // .domain([0, d3.max(data, function (d) { return d[drawer.dtype]; })]);
       var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
       var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
       var dateFormat = d3.time.format('%X');
       var valueline = d3.svg.line()
         .x(function(d) { return x(d.date);  })
-        .y(function(d) { return y(d['dtype']); });
+        .y(function(d) { return y(d[drawer.dtype]); });
       var svg = d3.select("#spot-data").append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
@@ -108,7 +117,8 @@ $(document).ready( function() {
 
       drawer.svgUpdator = function(data) {
         x.domain(d3.extent(data, function (d) { return d.date; }));
-        y.domain([0, d3.max(data, function (d) { return d['dtype']; })]);
+        y.domain(d3.extent(data, function (d) { return d[drawer.dtype]; }));
+        // y.domain([0, d3.max(data, function (d) { return d[drawer.dtype]; })]);
         var svg = d3.select("#spot-data").transition();
         svg.select('path').duration(500).attr('d', valueline(data));
         svg.select(".x.axis").duration(500).call(xAxis);
@@ -165,14 +175,14 @@ $(document).ready( function() {
   };
   drawer.init();
   
-  // (function bindEvent() {
-  //   $( "#speed" ).selectmenu( {
-  //     change: function(event, ui) {
-  //       // console.log(event);
-  //       console.log(ui.element.label);
-  //     }
-  //   })
-  // })();
+  (function bindEvent() {
+    $( "#dtype" ).selectmenu( {
+      change: function(event, ui) {
+        drawer.dtype = ui.item.value;
+        drawer.update();
+      }
+    })
+  })();
 
 });
 

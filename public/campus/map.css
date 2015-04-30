@@ -2,6 +2,10 @@ body {
   margin: 0px 100px auto;
 }
 
+#campus-map {
+  margin-bottom: 20px;
+}
+
 .ntuspot {
 	fill: red;
 	cursor: pointer;
@@ -21,9 +25,9 @@ path {
     shape-rendering: crispEdges;
 }
 
-/*label {
+label {
   display: block;
 }
 select {
   width: 200px;
-}*/
+}
