@@ -98,7 +98,7 @@ var reqHandlers = {
     var idBegin 
     var idBegin = req.body.idBegin,
         idEnd = req.body.idEnd;
-    dbCol.find().sort({_id : -1}).limit(idEnd)
+    dbCol.find().sort({_id : +1}).limit(idEnd)
                 .skip(idBegin - 1).lean().exec(function (err, docs) {
       res.send(JSON.stringify(docs));
     }); 
