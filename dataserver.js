@@ -5,6 +5,7 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 5000;
 var mongoose = require( 'mongoose' );
+var fanio = io.of('/fanfeed');
 
 var reqHandlers = {
   monitorHandler: function(dbCol, imgCol, socket) {
@@ -40,6 +41,26 @@ var reqHandlers = {
     };
     monitorAgent.init(); 
   },
+  fanMonitorHandler: function(socket) {
+    var monitorAgent = {
+      init: function() {
+        console.log('A monitor connected');
+        var intervalId = this.updateClock();
+        socket.on('disconnect', function() {
+          console.log('monitor disconnected'); 
+          clearInterval(intervalId);
+        });
+      },
+      updateClock: function() {
+        socket.emit('date', {'date': new Date()});
+        return setInterval(function() { 
+          socket.emit('date', {'date': new Date()});
+          // console.log("My port is " + process.env.PORT);
+        }, 2000);
+      }
+    };
+    monitorAgent.init();
+  },
   feedHandler: function(dbCol, req, res) {
     var post_request_body = '';
     req.on('data', function (data) {
@@ -52,7 +73,7 @@ var reqHandlers = {
       } catch(e) {
         console.err(e);
       }
-      io.sockets.emit('newPkt', pkt);  // Send event:newData to all monitors
+      io.sockets.emit('newPkt', pkt);
       var lab2doc = new dbCol(pkt);
       lab2doc.save(function(err, lab2doc) {  // Save to db
         if (err)  return console.error(err);
@@ -91,8 +112,24 @@ var reqHandlers = {
       }); 
       imgpkt.raw = imgpkt.raw.toString('base64');
       // console.log("Encode image to: " + imgpkt.raw);
-      io.sockets.emit('newImg', imgpkt);  // Send event:newData to all monitors
+      io.sockets.emit('newImg', imgpkt);
     });    
+  },
+  feedFanHandler: function(req, res) {
+    var post_request_body = '';
+    req.on('data', function (data) {
+       post_request_body += data;
+    });
+    req.on('end', function (data) {
+      var pkt;
+      try {
+        pkt = JSON.parse(post_request_body);
+      } catch(e) {
+        console.err(e);
+      }
+      fanio.emit('newPkt', pkt);
+      res.send('Server GOT your data!');
+    });
   },
   reqSpotHandler: function(dbCol, req, res) {
     var idBegin 
@@ -137,7 +174,11 @@ mongoose.connect(mongodbUrl);
 console.log("mongodbUrl = " + mongodbUrl);
 
 var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Database connection error: '));
+db.on('error', function (err) {
+  console.error('Database connection error: ' + err);
+  console.log("Note: it's free to continue if only using fanmonitor/ fanfeed");
+})
+// db.on('error', console.error.bind(console, 'Database connection error: '));
 db.once('open', function (callback) {
   console.log("Database open");
   var Lab2Collection = getLab2Collection();
@@ -146,8 +187,6 @@ db.once('open', function (callback) {
   io.on('connection', function (socket) {  // connection setup for monitor.html
     reqHandlers.monitorHandler(Lab2Collection, Lab2ImgCol, socket);
   });
-
-  app.use(bodyParser.json());
   app.post('/feed', function (req, res) {
     reqHandlers.feedHandler(Lab2Collection, req, res);
   });
@@ -157,9 +196,16 @@ db.once('open', function (callback) {
   app.post('/reqspot', function (req, res) {
     reqHandlers.reqSpotHandler(Lab2Collection, req, res);
   });
-
-  app.use(express.static('public'));
 });
+
+app.use(bodyParser.json());
+fanio.on('connection', function (socket) {  // connection setup for monitor.html
+  reqHandlers.fanMonitorHandler(socket);
+});
+app.post('/feedfan', function (req, res) {
+  reqHandlers.feedFanHandler(req, res);
+});
+app.use(express.static('public'));
 
 
 

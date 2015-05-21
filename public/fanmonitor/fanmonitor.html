@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
+    <title>Monitor fan</title>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="fanmonitor.js"></script>
+    <style type="text/css">
+      #newImg {
+        display: block;
+        max-width: 100px;
+        max-height: 100px;
+        width: auto;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-role="page">
+      <p>This is our fanmonitor.html file</p>
+      <p>Clock: <span id="date"></span></p>
+      <p>Data received: <span id='countData'>0</span></p>
+      <div id="newData"></div>
+      <img id="fanImg" src='/image/fan_static.png'>
+
+      <!-- For drawing figure -->
+      <div id="temp-figure"></div>  
+    </div>
+  </body>
+</html>
