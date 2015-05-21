@@ -1,5 +1,5 @@
-var socket = io.connect('http://localhost:5000/fanfeed');
-// var socket = io.connect('/fanfeed');
+// var socket = io.connect('http://localhost:5000/fanfeed');  // for local testing
+var socket = io.connect('/fanfeed');  // for publishing
 
 socket.on('connect', function () {
   console.log('User connected!');
@@ -12,7 +12,7 @@ socket.on('date', function(data) {
 fanstate = false;
 
 socket.on('newPkt', function(pkt) {
-  var str = "temparature: " + pkt.temp.toFixed(2) + '<br>';
+  var str = "temparature: " + pkt.temp.toFixed(2) + '<br>' + "threshold: " + pkt.threshold.toFixed(2) + '<br>';
   $('#newData').html(str);
   $('#countData').html(1 + parseInt($('#countData').html()));
   if (pkt.state && !fanstate) {

@@ -27,6 +27,7 @@ var feed = {
     var tmp1 = randU(30, 32);
     var packet = {
       temp  : tmp1,
+      threshold : 31,
       state : tmp1 > 31 
     };
     feed.postData(JSON.stringify(packet));
