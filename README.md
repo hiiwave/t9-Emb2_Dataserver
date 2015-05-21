@@ -1,6 +1,9 @@
 # t9-Emb2_Dataserver  
 --- This project is for practice only ---   
   
+2015.5.21 22:50 (Luan)  
+Lab 3 ready  
+  
 2015.4.30 21:30 (Luan)  
 Final Version  
   
