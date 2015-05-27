@@ -4,6 +4,7 @@ var drawer, bindSocketEvents;
 
 $(document).ready(function() {
   bindSocketEvents();
+  drawer.init();
 });
 
 bindSocketEvents = function() {
@@ -23,11 +24,11 @@ bindSocketEvents = function() {
     drawer.threshold = pkt.threshold;
 
     if (first_time) {
-      drawer.init(pkt);
-      first_time = false;  
-    } else {
-      drawer.update(pkt);  
-    }
+      first_time = false; 
+      drawer.drawThreshold(pkt.threshold);
+    } 
+    drawer.update(pkt);  
+    
     $('#newData').html(str);
     $('#countData').html(1 + parseInt($('#countData').html()));
     if (pkt.state && !fanstate) {
@@ -43,13 +44,13 @@ bindSocketEvents = function() {
   
 drawer = {
   init: function(pkt) {
-    pkt.myx = 0;
-    var initPkt = pkt;
-    this.datanow = [initPkt];
+    var initPkt = undefined;
+    this.datanow = [];
     this.firstDraw(drawer.datanow);
   },
   datanow: undefined,
   svgUpdator: undefined,
+  drawThreshold: undefined,
   threshold: undefined,
   update: function(pkt) {
     pkt.myx = 0;
@@ -87,14 +88,19 @@ drawer = {
     svg.append('path').attr('class', 'line').attr('id', 'data')
       .attr('d', valueline(data));
     svg.append('path').attr('class', 'line').attr('id', 'threshold')
-      .attr('d', valueline([{myx : 0, temp : 31}, {myx : 20, temp : 31}]))
+        .attr('d', valueline([{myx : 0, temp : 25}, {myx : 20, temp : 25}]));
 
     svg.append('g').attr('class', 'x axis')
       .attr('transform', 'translate(0, ' + height + ')')
       .call(xAxis);
     svg.append('g').attr('class', 'y axis')
       .call(yAxis);
-
+    drawer.drawThreshold = function(threshold) {
+      var svg = d3.select("#temp-figure").transition();
+      svg.select('path#threshold').duration(500)
+        .attr('d', valueline([{myx : 0, temp : threshold},
+         {myx : 20, temp : threshold}]));
+    };
     drawer.svgUpdator = function() {
       var svg = d3.select("#temp-figure").transition();
       svg.select('path#data').duration(0).attr('d', valueline(drawer.datanow));
