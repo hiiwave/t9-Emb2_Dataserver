@@ -16,15 +16,15 @@ bindSocketEvents = function() {
     $('#date').text(data.date);
   });
 
-  fanstate = false;
-
-  var first_time = true;
+  var fanstate = false;
+  var threshold = -1;
+  
   socket.on('newPkt', function(pkt) {
     var str = "temparature: " + pkt.temp.toFixed(2) + '<br>' + "threshold: " + pkt.threshold.toFixed(2) + '<br>';
     drawer.threshold = pkt.threshold;
 
-    if (first_time) {
-      first_time = false; 
+    if (pkt.threshold != threshold) {
+      threshold = pkt.threshold;
       drawer.drawThreshold(pkt.threshold);
     } 
     drawer.update(pkt);  
