@@ -16,6 +16,7 @@ bindSocketEvents = function() {
     $('#date').text(data.date);
   });
 
+
   var fanstate = false;
   var threshold = -1;
   
