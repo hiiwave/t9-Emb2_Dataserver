@@ -1,5 +1,5 @@
-var socket = io.connect('http://localhost:5000/fanfeed');  // for local testing
-// var socket = io.connect('/fanfeed');  // for publishing
+// var socket = io.connect('http://localhost:5000/fanfeed');  // for local testing
+var socket = io.connect('/fanfeed');  // for publishing
 var drawer, bindSocketEvents;
 
 $(document).ready(function() {
