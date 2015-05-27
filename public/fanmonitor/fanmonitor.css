@@ -1,0 +1,31 @@
+body {
+  margin: 0px 100px auto;
+}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+.axis path,
+.axis line {
+    stroke: grey;
+    stroke-width: 1;
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+path#threshold {
+  stroke: gray;
+}
+
+.x.axis text {
+  display: none;
+}
+
+label {
+  display: block;
+}
+select {
+  width: 200px;
+}
